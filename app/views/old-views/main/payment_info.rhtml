@@ -1,0 +1,20 @@
+
+<h3>Payment info</h3>
+
+<p>We do not have an automatic payment system yet. Please set up a recurring monthly bank-transfer of at least <%= @monthly_fee %> kr. (or <%= (@monthly_fee + 50) %> kr. or more if you can afford it) to the Labitat bank account:</p>
+
+<ul>
+  <li>Bank: Merkur Bank</li>
+  <li>Reg no: 8401</li>
+  <li>Account no: 1125238</li>
+</ul>
+
+<p style='color:red'>Please make sure you put a message/comment on the bank transfer with your Labitat login-name, otherwise we won't know who paid!</p>
+
+<p>If you wish to remain anonymous, just write "anonymous" instead of your login-name, but then you won't receive access to the space in exchange for your payment.</p>
+
+<p>If you intend to downgrade to non-paying membership, please contact money@labitat.dk</p>
+
+<p>You can also pay in cash to <%= link_to 'the treasurer', 'https://labitat.dk/wiki/Treasurer' %>.</p>
+
+<p>After you have paid you can go check if the payment has been detected on your <%= link_to 'user info', :controller => 'user', :action => 'info' %> page.</p>

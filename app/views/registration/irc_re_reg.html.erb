@@ -1,0 +1,14 @@
+<h3>Re-register on IRC</h3>
+
+<p style='color:red'><%= flash[:notice] %></p>
+
+<p>Only use this form if you, for some reason, have not been registered on IRC.</p>
+
+<p style='color:red'>Please make sure you are signed out of IRC before you continue!</p>
+
+<% form_tag do %>
+
+  <p><label><span>Password: </span><%= password_field_tag 'password' %></label></p>
+  <p><%= submit_tag 'Do it!' %></p>
+
+<% end %>

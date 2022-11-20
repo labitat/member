@@ -1,0 +1,14 @@
+<h3>Verify email address change</h3>
+
+<p>In order to complete the address change, we need your password one more time.</p>
+
+<% form_tag do %>
+
+  <p><label><span>Password: </span><%= password_field_tag 'password' %></label></p>
+  <input type='hidden' name='code' value='<%= @auth_code %>' />
+  <p><%= submit_tag 'Confirm' %></p>
+
+<% end %>
+
+
+

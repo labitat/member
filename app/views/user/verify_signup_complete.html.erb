@@ -1,0 +1,14 @@
+<h3>Account verification successful!</h3>
+
+<p>You have successfully signed up as a Labitat member.</p>
+
+<p>You can now <%= link_to 'log in to the member site', :controller => 'session', :action => 'new' %></p>
+
+<% if Settings['mediawiki_url'] %>
+   <p>A wiki account on <a href='<%= Settings['mediawiki_url'] %>'>the Labitat wiki</a> has been automatically created with the your login name and password. Log in <a href='<%= Settings['mediawiki_url'] + 'index.php?title=Special:UserLogin' %>'>here</a>.</p>
+<% end %>
+
+<% if Settings['atheme_server'] %>
+   <p>An IRC account on the Labitat server has been registered with your login name and password. See our <a href='<%= Settings['mediawiki_url'] %>index.php/IRC'>IRC help page</a> for more info.</a></p>
+<% end %>
+

@@ -1,0 +1,17 @@
+
+<h3>Upload bank data</h3>
+
+<p color='red'>
+  <%= flash[:notice] %>
+</p>
+
+<p>Go to <%= link_to 'the Merkur bank web interface', 'http://merkurwebbank.dk/' %>. Log in. Obtain a bank statement in CSV form. Then paste the statement into the text-area below. Example below:</p>
+<pre>31-12-2021;"message"; 300,00; ...</pre>
+
+<% form_tag :action => 'confirm_bankdata' do %>
+
+  <p><%= text_area_tag 'bankdata', {}, :rows => 10, :cols => 54 %></p>
+
+  <p><%= submit_tag 'Upload' %></p>
+
+<% end %>

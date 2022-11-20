@@ -1,0 +1,21 @@
+<h3>Gaining card+pin access to the space</h3>
+
+<p>User: <%= @user.login %></p>
+
+<p>In order to gain card+pin access to the space you will need to load your card+pin data into the system.</p>
+<p>This can only be done at the front-door entrance to the space.</p>
+<p>Swipe a magnetic-stripe card of your choice through the card-reader (magnetic stripe should point towards the door), then enter a pin-code of your choice (minimum 4 digits, maximum 16 digits). End the transaction by pressing #. After a few seconds, a yellow light should blink. Now repeat the procedure (swipe card, enter pin, press #). If you did it correctly, then after a few seconds the green light should blink three times. Note the exact time when the green light blinks three times. If it doesn't work, then simply try again.</p>
+<p>When you have successfully entered your card+pin into the system, come back to this web-page and re-load it.</p>
+<p>The exact time when you last pressed # should appear below. Click the "claim" link next to that time.</p>
+
+<% if @hashes.length == 0 %>
+  <p style='font-weight:bold'>No unclaimed card+pin info available.</p>
+<% else %>
+  <ul>
+    <% @hashes.each do |hash| %>
+      <li><%= hash.created.strftime('%d/%m/%Y - %H:%M:%S') %> - <%= link_to 'claim', :action => 'claim_hash', :id => hash.id %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<p><%= link_to 'back to user info', :action => 'info' %></p>

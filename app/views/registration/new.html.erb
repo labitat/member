@@ -1,0 +1,21 @@
+<h2>Labitat member signup</h2>
+
+<p>This is the centralized signup page for <a href='http://labitat.dk/'>Labitat</a>.</p>
+
+<h3>Become a Labitat memberqweqwe</h3>
+
+<p style='color:red'>If you already have a user on the Labitat wiki, be sure to choose the same login name here as for the wiki! (otherwise you will end up with two wiki accounts) </p>
+
+<% if @user.errors.present? %>
+  <ul class="errors"><% @user.errors.full_messages.each do |err| %>
+    <li><%= err %></li>
+  <% end %></ul>
+<% end %>
+
+<%= form_tag signup_create_path, id: "registration" do %>
+  <p><label>Username: <%= text_field :user, :login %></label></p>
+  <p><label>Email: <%= text_field :user, :email %></label></p>
+  <%= render :partial => "user" %>
+  <p><label>Sign up for the Labitat mailing list? <%= check_box :user, :mailing_list %></label></p>
+  <p><%= submit_tag "Sign up" %></p>
+<% end %>

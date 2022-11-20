@@ -1,0 +1,26 @@
+
+<h3>User info</h3>
+
+<p>User: <%= @user.login %></p>
+
+<!--<p>You have registered yourself as a: <%= (@paying) ? 'paying' : 'non-paying' %> member.</p>-->
+
+<% if @user.ever_paid? %>
+  <p>According to our records, your status as a paying member (and access to the space) <%= (@paying) ? 'will expire' : 'expired' %> on: <%= @user.paid_until.strftime('%Y-%m-%d') %>
+<% else %>
+  <p>According to our records you have never paid.</p>
+  <% if @user.will_pay? %>
+    <p>You really should pay.</p>
+  <% else %>
+    <p>Since you are signed up as a non-paying member, this is exactly as it should be :-)</p>
+  <% end %>
+<% end %>
+
+<p><%= link_to 'Information on how to pay', :controller => 'main', :action => 'payment_info' %></p>
+
+
+<% if @user.door_hash && (@user.door_hash != '') %>
+   <p>Your card+pin info is currently set. If you want to loose card+pin access to the space, you can <%= link_to 'clear your door-hash', {:action => 'clear_hash'}, :confirm => "Are you sure you want to do this? You will lose access to the space!" %>.</p>
+<% else %>
+   <p>You do not currently have your card+pin info set. This means that you probably do not have card+pin access to the space. Go <%= link_to 'here', :action => 'list_hashes' %> to fix that.</p>
+<% end %>

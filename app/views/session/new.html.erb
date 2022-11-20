@@ -1,0 +1,18 @@
+<h2 class="title">Labitat Member Site</h2>
+  <div class="entry">
+
+  <%= flash[:error] %>
+
+  <%= form_tag do %>
+    <p><label><span>Username: </span><%= text_field_tag "login" %></label></p>
+    <p><label><span>Password: </span><%= password_field_tag "password" %></label></p>
+    <p><label><span>Remember me: </span><%= check_box_tag "remember_me" %></label></p>
+    <p><%= submit_tag "Log in" %></p>
+
+    <div class='text'>
+      <p>If you aren't a Labitat member you can sign up <%= link_to "here", signup_path %>.</p>
+      <p>If you forgot your password, you can change it <%= link_to "here", "registration#forgot_password" %>.</p>
+
+    </div>
+  <% end %>
+</div>
