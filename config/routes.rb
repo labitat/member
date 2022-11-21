@@ -9,8 +9,9 @@ Rails.application.routes.draw do
   get "/signup", to: "registration#new", as: "signup"
   post "/signup", to: "registration#create", as: "signup_create"
   get "/signup/thanks", to: "registration#thanks", as: "signup_thanks"
-  get "/signup/verify", to: "registration#verify_signup", as: "verify_signup"
-  get "/signup/verified", to: "registration#verify_complete", as: "verify_complete"
+  get "/signup/verify", to: "registration#verify", as: "verify_signup"
+  post "/signup/verify", to: "registration#verify_signup"
+  get "/signup/verified", to: "registration#verify_signup_complete", as: "verify_complete"
   get "/signup/error", to: "registration#verify_error", as: "verify_error"
   get "/signup/verify_email", to: "registration#verify_email", as: "verify_email"
 

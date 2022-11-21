@@ -96,25 +96,18 @@ class RegistrationController < ApplicationController
   def thanks
   end
 
+  def verify
+    @auth_code = params[:code]
+    @user = User.find_by(auth_code: @auth_code)
+
+    return redirect_to :action => "verify_error" unless @user
+  end
+
   def verify_signup
     @auth_code = params[:code]
+    @user = User.find_by(auth_code: @auth_code)
 
-    # only allow alphanumeric characters
-    if @auth_code.gsub(/(\d|\w).*/, "") != ""
-      redirect_to :action => "verify_error"
-      return
-    end
-
-    @user = User.find(
-      :first,
-      :conditions => ["auth_code = ?", @auth_code],
-    )
-
-    if !@user
-      redirect_to :action => "verify_error"
-      return
-    end
-
+    return redirect_to :action => "verify_error" unless @user
     return if !request.post?
 
     if !@user.authenticated?(params[:password], true)
@@ -127,9 +120,9 @@ class RegistrationController < ApplicationController
 
     @user.verify!
 
-    Notifier.deliver_signup_congrats(@user)
+    NotifierMailer.with(user: @user).signup_congrats.deliver_now
 
-    redirect_to :action => "verify_signup_complete"
+    redirect_to verify_complete_path
   end
 
   def verify_signup_complete
@@ -140,17 +133,7 @@ class RegistrationController < ApplicationController
 
   def verify_email
     @auth_code = params[:code]
-
-    # only allow alphanumeric characters
-    if @auth_code.gsub(/(\d|\w).*/, "") != ""
-      redirect_to :action => "verify_error"
-      return
-    end
-
-    @user = User.find(
-      :first,
-      :conditions => ["auth_code = ?", @auth_code],
-    )
+    @user = User.find_by(auth_code: @auth_code)
 
     if !@user
       redirect_to :action => "verify_error"

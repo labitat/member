@@ -1,0 +1,12 @@
+<h3>Finalize signup</h3>
+
+<p>In order to complete signup and create your user across all Labitat services (IRC, wiki, mailinglists, etc.) we need your password one more time.</p>
+
+<%= form_tag verify_signup_path, id: "verify" do %>
+  <p><label><span>Password: </span><%= password_field_tag "password" %></label></p>
+  <%= hidden_field_tag "code", @auth_code %>
+  <p><%= submit_tag "Verify" %></p>
+<% end %>
+
+
+

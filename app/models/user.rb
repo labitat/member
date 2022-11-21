@@ -65,4 +65,199 @@ class User < ApplicationRecord
   def password_required?
     crypted_password.blank? || !password.blank?
   end
+
+  def verify!
+    self.auth_code = ""
+    self.verified = true
+    self.verified_date = Time.now.strftime("%Y-%m-%d")
+    self.email = email.downcase
+    on_verify # run on_verify hooks
+    self.save!
+  end
+
+  def on_verify
+
+    # irc_register_account
+    #mailman_register_all if mailing_list?
+
+    begin
+      mediawiki_register_account unless mediawiki_user_exists?
+    rescue Exception => e
+      p e
+      Rails.logger.error(e)
+      # reverse mailman signup and irc account creation before failing
+      mailman_unregister_all if mailing_list?
+      irc_drop_account
+      raise e
+    end
+  end
+
+  def mailman_register_all
+
+    #lists = mailman_getlists
+    # mailman_register("members")
+
+    #lists.keys.each do |list|
+    #  unless lists[list]
+    #    mailman_register(list)
+    #  end
+    #end
+  end
+
+  def mailman_register(list = "members")
+    if Rails.configuration.mailman_path.present?
+      return true
+    end
+
+    #list = 'members' # XXX list name should be in settings.yml, not hardcoded here
+    if list == "announce"
+      list = "members"
+    end
+
+    ENV["PYTHONPATH"] = "#{Rails.configuration.mailman_path}/bin"
+    ENV["PYTHONPATH"] += ":" + "#{RAILS_ROOT}/script/mailman"
+
+    withlist = "#{Rails.configuration.mailman_path}/bin/withlist -l -r"
+    passwordparam = "--password " + User.generate_random_password(10) # random pw
+    passwordparam = "--password #{password.shellescape}" if password
+    script = "#{withlist} new_member #{list.shellescape} --email #{email.shellescape} #{passwordparam}"
+
+    out = `#{script} 2>&1`
+
+    if out.match(/error/i)
+      if out.match(/exists/i) # email is already registered
+        return mailman_change_password(list) # update the password
+      else
+        raise out
+      end
+    else
+      return true
+    end
+  end
+
+  def mailman_unregister_all
+    lists = mailman_getlists
+
+    lists.keys.each do |list|
+      if lists[list]
+        mailman_unregister(false, list)
+      end
+    end
+  end
+
+  def mailman_getlists
+    if Rails.configuration.mailman_path.present?
+      return true
+    end
+
+    ENV["PYTHONPATH"] = Settings["mailman_path"] + "/bin"
+    ENV["PYTHONPATH"] += ":" + RAILS_ROOT + "/script/mailman"
+
+    script = Settings["mailman_path"] + "/bin/list_lists -b"
+    out = `#{script} 2>&1`
+
+    lists = Hash.new
+    list_members = Settings["mailman_path"] + "/bin/list_members"
+
+    out.split("\n").each do |list|
+      if list == "mailman" or list == "bestyrelse" or list == "info" or list == "rf13makerspace" or list == "biologigaragenboard" or list == "trustees" # ignore the mailman meta-list and the sekrit board list
+        next
+      end
+      script = "#{list_members}  #{list}"
+      outinner = `#{script} 2>&1`
+
+      found = false
+      outinner.split("\n").each do |line|
+        if line == email
+          found = true
+          break
+        end
+      end
+
+      storeas = list
+      if list == "members"
+        storeas = "announce"
+      end
+      lists[storeas] = found
+    end
+
+    return lists
+  end
+
+  def mailman_unregister(p_email = false, list = "members")
+    if !Settings["mailman_path"]
+      return true
+    end
+
+    use_email = p_email || email
+
+    if list == "announce"
+      list = "members"
+    end
+
+    ENV["PYTHONPATH"] = Settings["mailman_path"] + "/bin"
+    ENV["PYTHONPATH"] += ":" + RAILS_ROOT + "/script/mailman"
+
+    withlist = Settings["mailman_path"] + "/bin/withlist -l -r"
+    script = "#{withlist} delete_member #{list.shellescape} --email #{use_email.shellescape}"
+
+    out = `#{script} 2>&1`
+
+    if out.match(/error/i)
+      raise out
+    else
+      return true
+    end
+  end
+
+  def mediawiki_user_exists?
+    if Rails.configuration.mediawiki_path.present?
+      return true
+    end
+
+    ENV["MW_INSTALL_PATH"] = Rails.configuration.mediawiki_path
+    script_path = "#{RAILS_ROOT}/script/mediawiki"
+
+    out = `php #{script_path}/user_check.php -- #{login.shellescape}` # is the username free?
+
+    if $?.success?
+      return false
+    else
+      return true
+    end
+  end
+
+  def mediawiki_same_password?
+    if Rails.configuration.mediawiki_path.present?
+      return true
+    end
+
+    ENV["MW_INSTALL_PATH"] = Rails.configuration.mediawiki_path
+    script_path = RAILS_ROOT + "/script/mediawiki"
+
+    out = `php #{script_path}/login_check.php -- #{login.shellescape} #{password.shellescape}` # is the password valid for the mediawiki user?
+
+    if $?.success?
+      return true
+    else
+      return false
+    end
+  end
+
+  def mediawiki_register_account
+    if Rails.configuration.mediawiki_path.present?
+      return true
+    end
+
+    ENV["MW_INSTALL_PATH"] = Rails.configuration.mediawiki_path
+    script_path = RAILS_ROOT + "/script/mediawiki"
+
+    out = `php #{script_path}/create_user.php -- #{login.shellescape} #{password.shellescape} #{email.shellescape}` # create a mediawiki user
+
+    if $?.success?
+      return true
+    else
+      raise "Mediawiki user creation error: " + out
+    end
+  end
 end

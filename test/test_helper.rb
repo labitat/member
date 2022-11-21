@@ -3,6 +3,8 @@ require_relative "../config/environment"
 require "rails/test_help"
 require "capybara/rails"
 require "capybara/minitest"
+require "minitest/unit"
+require "mocha/minitest"
 
 class ActiveSupport::TestCase
   # Run tests in parallel with specified workers

@@ -12,6 +12,18 @@ class RegistrationControllerTest < ActionDispatch::IntegrationTest
     end
     click_button "Sign up"
     assert_content "Signup is almost complete"
+
+    mail = ActionMailer::Base.deliveries.last
+    link = mail.body.to_s[/(\/signup\/verify\?code=.*?)"/, 1]
+    visit link
+    within "#verify" do
+      fill_in "password", with: "pass123"
+    end
+    User.any_instance.stubs(:mailman_register_all).returns(true)
+    User.any_instance.stubs(:mediawiki_register_account).returns(true)
+    User.any_instance.stubs(:mediawiki_user_exists?).returns(true)
+    click_button "Verify"
+    assert_content "Account verification successful"
   end
 
   test "should not allow registration without matching passwords" do
