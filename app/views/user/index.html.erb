@@ -1,0 +1,48 @@
+<h2>Labitat member system</h2>
+
+<%= flash["notice"] %>
+
+<p>Welcome to the Labitat member system</p>
+
+<p style='color:red'>For information about how to pay and how to get access to the space, please see your <%= link_to "user info", user_info_path %> page.</p>
+
+<p>You have access to the following services.</p>
+
+<ul>
+  <li>The members site (this site)</li>
+  <% if Rails.configuration.mediawiki_url.present? %>
+    <li>The <%= link_to "Labitat Wiki", Rails.configuration.mediawiki_url %></li>
+  <% end %>
+  <% if Rails.configuration.atheme_server.present? %>
+    <% if Rails.configuration.mediawiki_url.present? %>
+      <li>The <%= link_to "Labitat IRC server", "#{Rails.configuration.mediawiki_url}index.php/IRC" %></li>
+    <% else %>
+      <li>The Labitat IRC server</li>
+    <% end %>
+  <% end %>
+  <% if Rails.configuration.mailman_path.present? %>
+    <li>Overview of our mailman mailing lists: <%= link_to "mailing lists", "http://lists.labitat.dk/listinfo" %> </li>
+	<li>Select the mailing lists you'd like to join: </li>
+	<ul>
+    <% lists = current_user.mailman_getlists %>
+    <% lists.keys.each do |list| %>
+       <li>
+         <%= list %> - 
+         <% if lists[list] %>
+           <%= link_to "Leave", :controller => "user", :action => "list_signoff", :list => list %>
+         <% else %>
+           <%= link_to "Join", :controller => "user", :action => "list_signup", :list => list %>
+         <% end %>
+       </li>
+    <% end %>
+    </ul>
+  <% end %>
+</ul>
+
+<p>The two important lists are:
+	<ul>
+	<li>Announce: Important information and news about the space. (a couple of mails per month)</li>
+	<li>Discuss: List for discussions, questions and talk. (approx. 1-5 a day)</li>
+	</ul>
+</p>
+<p style='color:red'><b>NB:</b> The lists are publicly archived and anything sent to them can be found through e.g. Google.</p>
