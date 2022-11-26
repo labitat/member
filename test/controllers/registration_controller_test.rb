@@ -38,4 +38,34 @@ class RegistrationControllerTest < ActionDispatch::IntegrationTest
     click_button "Sign up"
     assert_content "password did not match"
   end
+
+  test "should look like its resetting a password even if there is no user" do
+    visit forgot_password_url
+    within "#forgot_password" do
+      fill_in "email", with: "hello@there.com"
+    end
+    click_button "Do it"
+    assert_content "sent by email"
+    assert_equal 0, ActionMailer::Base.deliveries.count
+  end
+
+  test "should reset a password of a verified user" do
+    user = User.create!(email: "hello@there.com", password: "hello", password_confirmation: "hello", login: "hello", name: "hello there", phone: "")
+    visit forgot_password_url
+    within "#forgot_password" do
+      fill_in "email", with: "hello@there.com"
+    end
+    click_button "Do it"
+    assert_content "sent by email"
+    mail = ActionMailer::Base.deliveries.last
+    link = mail.body.to_s[/(\/change_password.*?)"/, 1]
+    visit link
+    within "#change_password" do
+      fill_in "password", with: "new password"
+      fill_in "password_confirmation", with: "new password"
+    end
+    click_button "Change password"
+    assert_content "password has been updated"
+    assert_not_nil User.authenticate("hello", "new password")
+  end
 end

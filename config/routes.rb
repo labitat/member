@@ -3,7 +3,13 @@ Rails.application.routes.draw do
 
   # login
   resources :session
-  get "/forgot_password", to: "user#forgot_password"
+
+  # password
+  get "/forgot_password", to: "registration#forgot_password", as: "forgot_password"
+  post "/forgot_password", to: "registration#send_forgot_password_email"
+  get "/forgot_password_sent", to: "registration#forgot_password_sent", as: "forgot_password_sent"
+  get "/change_password", to: "registration#change_password", as: "change_password"
+  post "/change_password", to: "registration#update_password"
 
   # registration
   get "/signup", to: "registration#new", as: "signup"
@@ -16,6 +22,8 @@ Rails.application.routes.draw do
   get "/signup/verify_email", to: "registration#verify_email", as: "verify_email"
 
   # user actions
+  get "/user/info", to: "user#info", as: "user_info"
 
+  # root
   root "main#index"
 end

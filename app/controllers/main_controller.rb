@@ -1,5 +1,5 @@
 class MainController < ApplicationController
-  layout "user"
+  #  layout "user"
 
   before_action :login_required
 

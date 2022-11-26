@@ -4,31 +4,30 @@ class RegistrationController < ApplicationController
   end
 
   def forgot_password
-    return unless request.post?
+  end
 
-    if !params[:email]
+  def send_forgot_password_email
+    if params[:email].blank?
       flash.now[:notice] = "You need to supply your email address!"
-      return
+      return render :forgot_password, status: :unprocessable_entity
     end
 
-    @user = User.find_by_email(params[:email], :first)
-
-    if !@user
-      @complete = true # fake response, to avoid fishing
-      return
+    if @user = User.find_by_email(params[:email])
+      @user.generate_forgot_password_token!
+      NotifierMailer.with(user: @user).forgot_password.deliver_now
     end
+    redirect_to forgot_password_sent_path
+  end
 
-    @user.generate_forgot_password_token
-
-    Notifier.deliver_forgot_password(@user.email, @user.forgot_password_token)
-
-    @complete = true
+  def forgot_password_sent
   end
 
   def change_password
     # extend this to include non-forgotten email type responses
 
-    if !params[:token]
+    token = params[:t]
+
+    unless token
       flash.now[:notice] = "Error: No token given"
       return
     end
@@ -45,19 +44,20 @@ class RegistrationController < ApplicationController
       @user = nil
       return
     end
+  end
 
-    return unless request.post?
-
-    if !(params[:password] and params[:password2] and params[:password] == params[:password2])
+  def update_password
+    unless params[:password].present? and params[:password] == params[:password_confirmation]
       flash.now[:notice] = "Error: Invalid password (empty or not equal)"
       return
     end
 
-    @user.change_password(params[:password])
-
-    flash.now[:notice] = "Password change successful. #{@template.link_to "Please log in.", :controller => "main", :action => "index"}"
-
-    @user = nil
+    user = User.find_by_forgot_password_token(params[:t])
+    user.verified = true
+    user.change_password!(params[:password])
+    self.current_user = user
+    flash[:notice] = "Congrats! Your password has been updated"
+    redirect_to root_path
   end
 
   def stats

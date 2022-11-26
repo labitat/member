@@ -56,14 +56,11 @@ class User < ApplicationRecord
   end
 
   def authenticated?(password, verify_ignore = false)
-    if (crypted_password == encrypt(password)) && !self.blocked? && (self.verified? || verify_ignore)
-      return true
-    end
-    return false
+    (ActiveSupport::SecurityUtils.secure_compare(crypted_password, encrypt(password))) && !self.blocked? && (self.verified? || verify_ignore)
   end
 
   def password_required?
-    crypted_password.blank? || !password.blank?
+    crypted_password.blank? || !password.nil?
   end
 
   def verify!
@@ -258,6 +255,70 @@ class User < ApplicationRecord
       return true
     else
       raise "Mediawiki user creation error: " + out
+    end
+  end
+
+  def generate_forgot_password_token!
+    self.forgot_password_token = User.generate_random_password(40)
+    self.forgot_password_expires = (Time.now + 60 * 60 * 4) # 4h expire
+    self.save!
+  end
+
+  def change_password!(new_password)
+    self.password = new_password
+    self.password_confirmation = new_password
+
+    encrypt_password
+
+    #    irc_change_password # XXX not working
+    mailman_change_password if mailing_list?
+    mediawiki_change_password
+
+    self.forgot_password_token = nil
+    self.forgot_password_expires = nil
+    self.save!
+  end
+
+  def mailman_change_password(list = "members")
+    if Rails.configuration.mailman_path.present?
+      return true
+    end
+
+    #list = 'members'
+    if list == "announce"
+      list = "members"
+    end
+
+    ENV["PYTHONPATH"] = "#{Rails.configuration.mailman_path}/bin:#{Rails.root}/script/mailman"
+
+    #      withlist = Settings['mailman_path'] + "/bin/withlist -l -r"
+    #      script = "#{withlist} set_member_password #{list} --email #{email} --password #{password}"
+
+    script = "#{Rails.root}/script/mailman/set_member_password.py --list #{list} --email #{email.shellescape} --password #{password.shellescape}"
+
+    out = `#{script} 2>&1`
+
+    if out.match(/error/i)
+      raise out
+    else
+      return true
+    end
+  end
+
+  def mediawiki_change_password
+    if Rails.configuration.mediawiki_path.present?
+      return true
+    end
+
+    ENV["MW_INSTALL_PATH"] = Rails.configuration.mediawiki_path
+    script_path = "#{Rails.root}/script/mediawiki"
+
+    out = `php #{script_path}/change_password.php -- #{login.shellescape} #{password.shellescape}` # change password for mediawiki user
+
+    if $?.success?
+      return false
+    else
+      return true
     end
   end
 end
