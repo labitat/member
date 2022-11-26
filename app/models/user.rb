@@ -321,4 +321,19 @@ class User < ApplicationRecord
       return true
     end
   end
+
+  # is the user an admin?
+  def is_admin?
+    if self.group == "admin"
+      return true
+    else
+      return false
+    end
+  end
+
+  def forget_me!
+    self.remember_token_expires_at = nil
+    self.remember_token = nil
+    save!
+  end
 end

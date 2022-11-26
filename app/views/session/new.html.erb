@@ -3,7 +3,7 @@
 
   <%= flash[:error] %>
 
-  <%= form_tag do %>
+  <%= form_tag new_session_path, id: "session" do %>
     <p><label><span>Username: </span><%= text_field_tag "login" %></label></p>
     <p><label><span>Password: </span><%= password_field_tag "password" %></label></p>
     <p><label><span>Remember me: </span><%= check_box_tag "remember_me" %></label></p>

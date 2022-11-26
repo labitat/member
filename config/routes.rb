@@ -2,7 +2,9 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # login
-  resources :session
+  get "/session/new", to: "session#new", as: "new_session"
+  post "/session/new", to: "session#create"
+  get "/session/destroy", to: "session#destroy", as: "session_destory"
 
   # password
   get "/forgot_password", to: "registration#forgot_password", as: "forgot_password"

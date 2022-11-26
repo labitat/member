@@ -11,6 +11,24 @@
   </head>
 
   <body>
+
+    <% if current_user %>
+      <div id='header'>
+        <ul id='menu'>
+          <li><%= link_to "log out", :controller => "session", :action => "destroy" %>
+          <li><%= link_to "main page", :controller => "main", :action => "index" %>
+          <li><%= link_to "user info", :controller => "user", :action => "info" %>
+        </ul>
+        <% if current_user.is_admin? %>
+        <ul id='admin_menu'>
+          <li><%= link_to "user admin", :controller => "user_admin", :action => "index" %></li>
+          <li><%= link_to "money admin", :controller => "money", :action => "index" %></li>
+        </ul>
+        <% end %>
+
+      </div>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>
