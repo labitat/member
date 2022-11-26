@@ -1,16 +1,16 @@
 module AuthenticatedSystem
   protected
 
+  attr_reader :current_user
+
   # Returns true or false if the user is logged in.
   # Preloads @current_user with the user model if they're logged in.
   def logged_in?
-    !!current_user
+    @current_user.present?
   end
 
-  # Accesses the current user from the session.
-  # Future calls avoid the database because nil is not equal to false.
-  def current_user
-    @current_user ||= (login_from_session || login_from_basic_auth || login_from_cookie) unless @current_user == false
+  def attempt_set_current_user
+    @current_user = login_from_session || login_from_basic_auth || login_from_cookie
   end
 
   # Store the given user id in the session.
@@ -50,7 +50,7 @@ module AuthenticatedSystem
   #   skip_before_filter :login_required
   #
   def login_required
-    authorized? || access_denied
+    access_denied unless authorized?
   end
 
   # Redirect as appropriate when an access request fails.
@@ -107,6 +107,7 @@ module AuthenticatedSystem
 
   # Called from #current_user.  Finaly, attempt to login by an expiring token in the cookie.
   def login_from_cookie
+    p cookies
     user = cookies[:auth_token] && User.find_by_remember_token(cookies[:auth_token])
     if user && user.remember_token?
       cookies[:auth_token] = { :value => user.remember_token, :expires => user.remember_token_expires_at }

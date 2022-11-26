@@ -143,7 +143,7 @@ class User < ApplicationRecord
   end
 
   def mailman_getlists
-    if Rails.configuration.mailman_path.present?
+    if !Rails.configuration.mailman_path.present?
       return true
     end
 
@@ -208,7 +208,7 @@ class User < ApplicationRecord
   end
 
   def mediawiki_user_exists?
-    if Rails.configuration.mediawiki_path.present?
+    if !Rails.configuration.mediawiki_path.present?
       return true
     end
 
@@ -335,5 +335,35 @@ class User < ApplicationRecord
     self.remember_token_expires_at = nil
     self.remember_token = nil
     save!
+  end
+
+  def paying?
+    fmt = "%Y-%m-%d"
+    today = Date.strptime(Time.now.strftime(fmt), fmt)
+
+    if !paid_until
+      return false
+    end
+
+    if paid_until >= today
+      return true
+    end
+
+    return false
+  end
+
+  def ever_paid?
+    fmt = "%Y-%m-%d"
+    epoch = Date.strptime("1970-01-01", fmt)
+
+    if !paid_until
+      return false
+    end
+
+    if paid_until > epoch
+      return true
+    else
+      return false
+    end
   end
 end

@@ -23,7 +23,10 @@ class UserController < ApplicationController
 
   def index
     @user = current_user
-    @paying = @user.is_paying?
+  end
+
+  def info
+    @user = current_user
   end
 
   def list_hashes
@@ -362,5 +365,9 @@ class UserController < ApplicationController
         return
       end
     end
+  end
+
+  def payment_info
+    @monthly_fee = Value.find_by_name("monthly_fee").value.to_i
   end
 end

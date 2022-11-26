@@ -1,4 +1,3 @@
-
 <h3>Payment info</h3>
 
 <p>We do not have an automatic payment system yet. Please set up a recurring monthly bank-transfer of at least <%= @monthly_fee %> kr. (or <%= (@monthly_fee + 50) %> kr. or more if you can afford it) to the Labitat bank account:</p>
@@ -15,6 +14,6 @@
 
 <p>If you intend to downgrade to non-paying membership, please contact money@labitat.dk</p>
 
-<p>You can also pay in cash to <%= link_to 'the treasurer', 'https://labitat.dk/wiki/Treasurer' %>.</p>
+<p>You can also pay in cash to <%= link_to "the treasurer", "https://labitat.dk/wiki/Treasurer" %>.</p>
 
-<p>After you have paid you can go check if the payment has been detected on your <%= link_to 'user info', :controller => 'user', :action => 'info' %> page.</p>
+<p>After you have paid you can go check if the payment has been detected on your <%= link_to "user info", user_info_path %> page.</p>
