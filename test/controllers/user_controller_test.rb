@@ -44,4 +44,6 @@ class MainControllerTest < ActionDispatch::IntegrationTest
     visit user_info_path
     assert_content "expired on"
   end
+
+  # do the hash tests
 end

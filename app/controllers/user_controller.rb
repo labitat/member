@@ -3,10 +3,6 @@ class UserController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:radius_hashes]
 
   def radius_hashes
-    if (request.protocol != "https://") && !Settings["insecure"]
-      return render :text => "only https allowed", :status => 403
-    end
-
     if params["key"] != Settings["radius_key"]
       return render :text => "wrong key", :status => 403
     end
@@ -31,7 +27,6 @@ class UserController < ApplicationController
 
   def list_hashes
     @user = current_user
-
     @hashes = DoorHash.find(:all, :order => "created desc", :limit => 5)
   end
 
