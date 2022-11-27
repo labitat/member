@@ -1,4 +1,4 @@
-class UserAdminController < ApplicationController
+class Admin::UserController < ApplicationController
   def list
     @filter = params[:filter] || "all"
 

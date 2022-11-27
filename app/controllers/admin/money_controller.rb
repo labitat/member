@@ -1,4 +1,4 @@
-class MoneyController < Admin::ApplicationController
+class Admin::MoneyController < Admin::ApplicationController
   # layout "user_wide"
   before_action :admin_required, :except => [:doorputer_new_hash, :doorputer_get_dates, :foodputer_data, :stats]
   skip_before_action :verify_authenticity_token, :only => [:doorputer_new_hash, :doorputer_get_dates, :foodputer_data]
