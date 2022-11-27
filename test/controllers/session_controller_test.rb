@@ -1,6 +1,6 @@
 require "test_helper"
 
-class MainControllerTest < ActionDispatch::IntegrationTest
+class SessionControllerTest < ActionDispatch::IntegrationTest
   test "should allow verified users to login" do
     User.create!(password: "pass123", login: "hey", email: "hey@there.com", password_confirmation: "pass123", name: "hey", phone: "12341234", verified: true)
     visit new_session_url

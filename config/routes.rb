@@ -29,7 +29,7 @@ Rails.application.routes.draw do
 
   get "/user/hashes", to: "user#list_hashes", as: "user_hashes"
   get "/user/claim_hash/:id", to: "user#claim_hash", as: "claim_hash"
-  get "/user/clear_hashes", to: "user#clear_hashes", as: "clear_hashes"
+  get "/user/clear_hash", to: "user#clear_hash", as: "clear_hash"
   get "/user/payment_info", to: "user#payment_info", as: "payment_info"
 
   # admin
