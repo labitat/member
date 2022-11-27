@@ -10,7 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_27_113311) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_27_222341) do
+  create_table "door_hashes", force: :cascade do |t|
+    t.boolean "verified", default: false, null: false
+    t.string "value", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "payments", force: :cascade do |t|
     t.integer "user_id", null: false
     t.date "received", null: false

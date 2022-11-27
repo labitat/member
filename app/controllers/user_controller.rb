@@ -23,7 +23,7 @@ class UserController < ApplicationController
 
   def list_hashes
     @user = current_user
-    @hashes = DoorHash.find(:all, :order => "created desc", :limit => 5)
+    @hashes = DoorHash.all.order("created_at desc").limit(5)
   end
 
   def claim_hash

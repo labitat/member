@@ -17,7 +17,7 @@
 
 
 <% if @user.door_hash.present? %>
-   <p>Your card+pin info is currently set. If you want to loose card+pin access to the space, you can <%= link_to "clear your door-hash", clear_user_hashes_path, :confirm => "Are you sure you want to do this? You will lose access to the space!" %>.</p>
+   <p>Your card+pin info is currently set. If you want to loose card+pin access to the space, you can <%= link_to "clear your door-hash", clear_hashes_path, :confirm => "Are you sure you want to do this? You will lose access to the space!" %>.</p>
 <% else %>
    <p>You do not currently have your card+pin info set. This means that you probably do not have card+pin access to the space. Go <%= link_to "here", user_hashes_path %> to fix that.</p>
 <% end %>

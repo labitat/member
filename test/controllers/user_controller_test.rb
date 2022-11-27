@@ -56,4 +56,31 @@ class MainControllerTest < ActionDispatch::IntegrationTest
     visit radius_hashes_url(key: "")
     assert_content "ASSHA-Password := \"#{@user.crypted_password}#{@user.salt}\""
   end
+
+  test "should say if there are no unclaimed hashes" do
+    @user = User.create!(password: "pass123", login: "hey", email: "hey@there.com", password_confirmation: "pass123", name: "hey", phone: "12341234", verified: true, paid_until: Time.now - 1.month)
+    visit new_session_url
+    within "#session" do
+      fill_in "login", with: "hey"
+      fill_in "password", with: "pass123"
+    end
+    click_button "Log in"
+    visit user_hashes_url
+    assert_content "No unclaimed card+pin info available"
+  end
+
+  test "should allow claiming a hash" do
+    @user = User.create!(password: "pass123", login: "hey", email: "hey@there.com", password_confirmation: "pass123", name: "hey", phone: "12341234", verified: true, paid_until: Time.now - 1.month)
+    DoorHash.create(value: "heyhey", verified: true)
+    # @user.payments.create!(received: Time.now - 3.days, amount: 500, user_id: @user.id)
+    visit new_session_url
+    within "#session" do
+      fill_in "login", with: "hey"
+      fill_in "password", with: "pass123"
+    end
+    click_button "Log in"
+    visit user_hashes_url
+    click_link "claim"
+    assert_content "Your card+pin info is currently set"
+  end
 end

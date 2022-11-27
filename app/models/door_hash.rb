@@ -1,0 +1,2 @@
+class DoorHash < ApplicationRecord
+end
