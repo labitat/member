@@ -25,6 +25,7 @@ module Member
       httponly: true,
     )
 
+    config.doorputer_key = ""
     config.radius_key = ""
     config.mailman_path = ""
     config.mediawiki_path = ""
