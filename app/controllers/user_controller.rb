@@ -3,18 +3,14 @@ class UserController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:radius_hashes]
 
   def radius_hashes
-    if params["key"] != Settings["radius_key"]
-      return render :text => "wrong key", :status => 403
+    if params["key"] != Rails.configuration.radius_key
+      return render plain: "wrong key", status: 403
     end
 
-    users = User.verified.find(:all)
-    out = ""
-
-    users.each do |user|
-      out += "#{user.login} ASSHA-Password := \"#{user.crypted_password}#{user.salt}\"\n"
+    hashes = User.verified.all.map do |user|
+      "#{user.login} ASSHA-Password := \"#{user.crypted_password}#{user.salt}\"\n"
     end
-
-    render :text => out
+    render plain: hashes.join
   end
 
   def index

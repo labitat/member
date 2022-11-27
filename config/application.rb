@@ -24,6 +24,8 @@ module Member
       key: "_socializus_session",
       httponly: true,
     )
+
+    config.radius_key = ""
     config.mailman_path = ""
     config.mediawiki_path = ""
     config.mediawiki_url = ""

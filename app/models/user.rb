@@ -31,11 +31,11 @@ class User < ApplicationRecord
 
   before_destroy :do_before_destroy
 
-  scope :unblocked, lambda { where("blocked = 0") }
-  scope :marked_as_paying, lambda { where("will_pay = 1") }
-  scope :blocked, lambda { "blocked = 1" }
-  scope :verified, lambda { "verified = 1 AND blocked = 0" }
-  scope :unverified, lambda { "verified = 0 AND blocked = 0" }
+  scope :unblocked, -> { where("blocked = 0") }
+  scope :marked_as_paying, -> { where("will_pay = 1") }
+  scope :blocked, -> { "blocked = 1" }
+  scope :verified, -> { where("verified = 1 AND blocked = 0") }
+  scope :unverified, -> { where("verified = 0 AND blocked = 0") }
 
   validates_presence_of :email, :message => "You must supply an email address"
   validates_presence_of :name, :message => "You must write your name"

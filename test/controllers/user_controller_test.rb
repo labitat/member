@@ -45,5 +45,15 @@ class MainControllerTest < ActionDispatch::IntegrationTest
     assert_content "expired on"
   end
 
-  # do the hash tests
+  test "should not send radius hashes without a key" do
+    @user = User.create!(password: "pass123", login: "hey", email: "hey@there.com", password_confirmation: "pass123", name: "hey", phone: "12341234", verified: true, paid_until: Time.now - 1.month)
+    visit radius_hashes_url
+    assert_content "wrong key"
+  end
+
+  test "should send radius hashes with a key" do
+    @user = User.create!(password: "pass123", login: "hey", email: "hey@there.com", password_confirmation: "pass123", name: "hey", phone: "12341234", verified: true, paid_until: Time.now - 1.month)
+    visit radius_hashes_url(key: "")
+    assert_content "ASSHA-Password := \"#{@user.crypted_password}#{@user.salt}\""
+  end
 end
