@@ -29,7 +29,13 @@ Rails.application.routes.draw do
   get "/user/clear_hashes", to: "user#clear_hashes", as: "clear_user_hashes"
   get "/user/payment_info", to: "user#payment_info", as: "payment_info"
 
-  # money stuff
+  # admin
+  namespace :admin do
+    # user
+    get "/users", to: "admin/user#list"
+    # money
+
+  end
 
   # root
   root "user#index"

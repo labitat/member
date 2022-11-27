@@ -338,18 +338,19 @@ class User < ApplicationRecord
   end
 
   def paying?
-    fmt = "%Y-%m-%d"
-    today = Date.strptime(Time.now.strftime(fmt), fmt)
+    # fmt = "%Y-%m-%d"
+    # today = Date.strptime(Time.now.strftime(fmt), fmt)
 
-    if !paid_until
-      return false
-    end
+    # if !paid_until
+    #   return false
+    # end
 
-    if paid_until >= today
-      return true
-    end
+    # if paid_until >= today
+    #   return true
+    # end
 
-    return false
+    # return false
+    paid_until && paid_until > Time.now
   end
 
   def ever_paid?
