@@ -34,6 +34,7 @@ Rails.application.routes.draw do
 
   # door
   get "/money/doorputer_new_hash", to: "door#new_hash", as: "new_door_hash"
+  get "/money/doorputer_get_dates", to: "door#list", as: "door_hash_list"
 
   # admin
   namespace :admin do

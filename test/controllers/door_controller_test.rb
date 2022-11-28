@@ -30,4 +30,16 @@ class DoorControllerTest < ActionDispatch::IntegrationTest
     visit new_door_hash_path(key: "", hash: "somehash")
     assert_content "timeout passed, you'll have to start over"
   end
+
+  test "list door hashes" do
+    freeze_time do
+      Value.create!(name: "bank_data_last_updated", value: "2021-05-25")
+      User.create!(email: "hello1@there.com", password: "hello", password_confirmation: "hello", login: "hello1", name: "hello there", phone: "", door_hash: "hello1")
+      User.create!(email: "hello2@there.com", password: "hello", password_confirmation: "hello", login: "hello2", name: "hello there", phone: "", paid_until: "2022-06-24")
+      User.create!(email: "hello3@there.com", password: "hello", password_confirmation: "hello", login: "hello3", name: "hello there", phone: "", paid_until: "2022-06-24", door_hash: "hello3")
+      User.create!(email: "hello4@there.com", password: "hello", password_confirmation: "hello", login: "hello4", name: "hello there", phone: "", paid_until: "2020-06-24", door_hash: "hello4")
+      visit door_hash_list_path(key: "")
+      assert_equal [{ "login" => "hello3", "expiry_date" => "2022-11-28", "hash" => "hello3" }, { "login" => "hello4", "expiry_date" => "2020-06-24", "hash" => "hello4" }], JSON.parse(page.body)
+    end
+  end
 end

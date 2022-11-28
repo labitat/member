@@ -23,37 +23,29 @@ class DoorController < ApplicationController
   end
 
   # called by the doorputer to retrieve login names, hashes and their expiration dates
-  def doorputer_get_dates
-    users = User.find(:all, :order => "login asc")
+  def list
+    users = User.where(["paid_until IS NOT NULL AND door_hash IS NOT NULL AND door_hash != ?", ""]).order("login asc")
 
     fmt = "%Y-%m-%d"
-
     v = Value.find_by_name("bank_data_last_updated")
-    bank_data_last_updated = Date.strptime(v.value, fmt)
-    today = Date.strptime(Time.now.strftime(fmt), fmt)
+    bank_data_last_updated = Date.strptime(v.value)
+    today = Time.now
+    data = users.map do |user|
+      # make sure door access doesn't expire because the bank data hasn't been uploaded recently
 
-    data = []
-
-    users.each do |user|
-      if user.door_hash && (user.door_hash != "")
-        next if !user.paid_until
-
-        # make sure door access doesn't expire because the bank data hasn't been uploaded recently
-
-        # if the user paid until some time after the last bank data update, but before today
-        # then the new monthly transfer has likely been received by the bank
-        # but has not been uploaded to the system
-        if (user.paid_until >= bank_data_last_updated) && (user.paid_until < today)
-          paid_until = today
+      # if the user paid until some time after the last bank data update, but before today
+      # then the new monthly transfer has likely been received by the bank
+      # but has not been uploaded to the system
+      paid_until = if (user.paid_until >= bank_data_last_updated) && (user.paid_until < Time.now)
+          today
         else
-          paid_until = user.paid_until
+          user.paid_until
         end
 
-        data << { "login" => user.login, "expiry_date" => paid_until, "hash" => user.door_hash }
-      end
+      { "login" => user.login, "expiry_date" => paid_until.strftime(fmt), "hash" => user.door_hash }
     end
 
-    render :text => data.to_json
+    render json: data
   end
 
   private
