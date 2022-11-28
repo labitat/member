@@ -1,36 +1,24 @@
 class DoorController < ApplicationController
   before_action :require_doorputer_key
 
-  def doorputer_new_hash
+  def new_hash
     if !params["hash"]
-      render :text => "no hash received", :status => 403
-      return
+      return render plain: "no hash received", :status => 403
     end
 
-    door_hash = DoorHash.find(:first, :conditions => ["value = ?", params["hash"]])
-
-    if door_hash
+    if door_hash = DoorHash.find_by_value(params["hash"])
       # has less than the time-out delay passed?
-      if (Time.now - door_hash.created).to_i < Settings["doorputer_verify_max_delay"]
+      if door_hash.created_at + Rails.configuration.doorputer_verify_max_delay.seconds > Time.now
         door_hash.verified = true
-        door_hash.created = Time.now
         door_hash.save!
-        render :text => "hash verified", :status => 202 # accepted
-        return
+        render plain: "hash verified", status: 202 # accepted
       else
         door_hash.destroy
-        render :text => "timeout passed, you'll have to start over", :status => 403
-        return
+        render plain: "timeout passed, you'll have to start over", status: 403
       end
     else # hash doesn't exist. a new hash will be created
-      door_hash = DoorHash.new
-
-      door_hash.value = params["hash"]
-      door_hash.created = Time.now
-      door_hash.save!
-
-      render :text => "new hash created", :status => 201 # created
-      return
+      DoorHash.create!(value: params["hash"], verified: false)
+      render plain: "new hash created", status: 201
     end
   end
 
@@ -71,7 +59,7 @@ class DoorController < ApplicationController
   private
 
   def require_doorputer_key
-    unless ActiveSupport::SecurityUtils.secure_compare(params["key"], Rails.configuration.doorputer_key)
+    unless params["key"] && ActiveSupport::SecurityUtils.secure_compare(params["key"], Rails.configuration.doorputer_key)
       return render plain: "wrong key", status: 403
     end
   end

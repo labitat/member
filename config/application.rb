@@ -25,6 +25,7 @@ module Member
       httponly: true,
     )
 
+    config.doorputer_verify_max_delay = 240
     config.doorputer_key = ""
     config.radius_key = ""
     config.mailman_path = ""

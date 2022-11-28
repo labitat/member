@@ -32,6 +32,9 @@ Rails.application.routes.draw do
   get "/user/clear_hash", to: "user#clear_hash", as: "clear_hash"
   get "/user/payment_info", to: "user#payment_info", as: "payment_info"
 
+  # door
+  get "/money/doorputer_new_hash", to: "door#new_hash", as: "new_door_hash"
+
   # admin
   namespace :admin do
     # user
