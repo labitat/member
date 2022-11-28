@@ -1,0 +1,67 @@
+
+<h3>Search for payments</h3>
+
+<%= link_to 'New payment', :action => 'new_payment' %>
+
+<p>Dates are in the format YYYY-MM-DD.</p>
+
+<% form_tag '', :method => 'get' do %>
+
+   <p>From/exact date: <%= text_field_tag 'from_date', @params['from_date'] %></p>
+   <p>To date: <%= text_field_tag 'to_date', @params['to_date'] %></p>
+
+   <p>From/exact amount (in kr): <%= text_field_tag 'from_amount', @params['from_amount'] %></p>
+   <p>To amount (in kr): <%= text_field_tag 'to_amount', @params['to_amount'] %></p>
+
+   <p>User/login-name: <%= text_field_tag 'login', @params['login'] %></p>
+
+   <p>Full name: <%= text_field_tag 'name', @params['name'] %></p>
+
+   <%= submit_tag 'Search' %>
+
+<% end %>
+
+
+<% if @payments %>
+  <% if @limit %>
+    Showing newest <%= @limit %> payments.
+  <% end %>
+
+  <% if @payments.length == 0 %>
+
+    <p>No payments found.</p>
+
+  <% else %>
+     <table cellspacing='5' cellpadding='3' border='0'>
+       <tr>
+         <td>Date</td>
+         <td>User</td>
+         <td>Amount</td>
+         <td>Comment</td>
+         <td>Actions</td>
+       </tr>
+
+       <% @payments.each do |payment| %>
+
+
+         <tr>
+           <% if !payment.received %>
+              <td><%= payment.user.login %></td>
+              <td><%= payment.id %></td>
+           <% else %>
+              <td><%= payment.received.strftime('%Y-%m-%d') %></td>
+              <td><%= payment.user.login %></td>
+           <% end %>
+           <td><%= payment.amount %></td>
+           <td><%= payment.comment %></td>
+           <td><%= link_to 'edit', :action => 'edit_payment', :id => payment.id %></td>
+         </tr>
+     
+
+       <% end %>
+     </table>
+  <% end %>
+ 
+<% end %>
+
+<%= link_to 'New payment', :action => 'new_payment' %>

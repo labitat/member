@@ -21,8 +21,8 @@
         </ul>
         <% if current_user.is_admin? %>
         <ul id='admin_menu'>
-          <li><%= link_to "user admin", :controller => "user_admin", :action => "index" %></li>
-          <li><%= link_to "money admin", :controller => "money", :action => "index" %></li>
+          <li><%= link_to "user admin", admin_users_path %></li>
+          <li><%= link_to "money admin", admin_money_path %></li>
         </ul>
         <% end %>
 

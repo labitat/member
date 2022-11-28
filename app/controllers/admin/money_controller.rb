@@ -1,15 +1,9 @@
 class Admin::MoneyController < Admin::ApplicationController
-  before_action :admin_required, :except => [:doorputer_new_hash, :doorputer_get_dates, :foodputer_data, :stats]
-  skip_before_action :verify_authenticity_token, :only => [:doorputer_new_hash, :doorputer_get_dates, :foodputer_data]
-
-  # called by the doorputer when an unknown hash is entered.
-  # needs to be called twice with the same hash for the hash to verify
-
   def index
   end
 
   # upload raw payment html data from bank
-  def upload_bankdata
+  def upload
   end
 
   def confirm_bankdata
@@ -121,7 +115,7 @@ class Admin::MoneyController < Admin::ApplicationController
     redirect_to :action => "search_payments"
   end
 
-  def search_payments
+  def search
     @params = params
     @limit = nil
 

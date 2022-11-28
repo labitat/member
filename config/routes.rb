@@ -39,9 +39,11 @@ Rails.application.routes.draw do
   # admin
   namespace :admin do
     # user
-    get "/users", to: "admin/user#list"
+    get "/users", to: "user#list"
     # money
-
+    get "/money", to: "money#index"
+    get "/money/search", to: "money#search"
+    get "/money/upload", to: "money#upload"
   end
 
   # root

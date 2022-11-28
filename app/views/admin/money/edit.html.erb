@@ -1,0 +1,11 @@
+<h3>Edit payment</h3>
+
+<%= danish_error_messages_for :payment %>
+
+<% form_tag url_for(:id => @payment.id) do %>
+
+  <%= render 'payment', :payment => @payment %>
+
+  <%= submit_tag 'Save' %>
+
+<% end %>
