@@ -39,7 +39,7 @@ class DoorControllerTest < ActionDispatch::IntegrationTest
       User.create!(email: "hello3@there.com", password: "hello", password_confirmation: "hello", login: "hello3", name: "hello there", phone: "", paid_until: "2022-06-24", door_hash: "hello3")
       User.create!(email: "hello4@there.com", password: "hello", password_confirmation: "hello", login: "hello4", name: "hello there", phone: "", paid_until: "2020-06-24", door_hash: "hello4")
       visit door_hash_list_path(key: "")
-      assert_equal [{ "login" => "hello3", "expiry_date" => "2022-11-28", "hash" => "hello3" }, { "login" => "hello4", "expiry_date" => "2020-06-24", "hash" => "hello4" }], JSON.parse(page.body)
+      assert_equal [{ "login" => "hello3", "expiry_date" => Time.now.strftime("%Y-%m-%d"), "hash" => "hello3" }, { "login" => "hello4", "expiry_date" => "2020-06-24", "hash" => "hello4" }], JSON.parse(page.body)
     end
   end
 end
