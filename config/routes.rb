@@ -44,6 +44,8 @@ Rails.application.routes.draw do
     get "/money", to: "money#index"
     get "/money/search", to: "money#search"
     get "/money/upload", to: "money#upload"
+    post "/money/confirm_bankdata", to: "money#confirm_bankdata"
+    post "/money/save_bankdata", to: "money#save_bankdata"
   end
 
   # root

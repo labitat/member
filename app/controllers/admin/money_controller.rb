@@ -7,11 +7,6 @@ class Admin::MoneyController < Admin::ApplicationController
   end
 
   def confirm_bankdata
-    if !request.post?
-      redirect_to "upload_bankdata"
-      return
-    end
-
     if !params["bankdata"] || (params["bankdata"] == "")
       flash[:notice] = "No bank data entered"
       redirect_to :back
@@ -29,7 +24,7 @@ class Admin::MoneyController < Admin::ApplicationController
       end
     end
 
-    @users = User.find(:all, :order => "login asc")
+    @users = User.all.order("login asc")
   end
 
   def save_bankdata
@@ -56,12 +51,12 @@ class Admin::MoneyController < Admin::ApplicationController
       @payments << payment
     end
 
-    v = Value.find_by_name("bank_data_last_updated")
+    v = Value.find_or_initialize_by(name: "bank_data_last_updated")
     v.value = Time.now.strftime("%Y-%m-%d")
     v.save!
 
     # update "paid until" date fields for all users
-    User.paid_until_update
+    User.paid_until_update!
   end
 
   def stats

@@ -80,7 +80,6 @@ class User < ApplicationRecord
     begin
       mediawiki_register_account unless mediawiki_user_exists?
     rescue Exception => e
-      p e
       Rails.logger.error(e)
       # reverse mailman signup and irc account creation before failing
       mailman_unregister_all if mailing_list?
@@ -365,6 +364,45 @@ class User < ApplicationRecord
       return true
     else
       return false
+    end
+  end
+
+  # update the "paid until" fields of all users based on payment data
+  def self.paid_until_update!
+    users = self.all
+
+    fmt = "%Y-%m-%d"
+    epoch = Date.strptime("1970-01-01", fmt)
+
+    user_h = {}
+    users.each do |user|
+      user_h[user.id] = { :user => user, :cur_date => epoch, :last_date => epoch }
+    end
+
+    payments = Payment.all
+
+    payments.each do |payment|
+      next if !payment.user_id
+
+      cur_h = user_h[payment.user_id]
+      next unless cur_h
+
+      if payment.amount > Rails.configuration.member_fee
+        cur_h[:cur_date] = payment.received
+      end
+
+      # if new payment was received less than a month after the last
+      # add the "unused" days to the end of the next month that has been paid for
+      if cur_h[:last_date] >= payment.received
+        cur_h[:cur_date] += (cur_h[:last_date] - payment.received).to_i
+      end
+
+      cur_h[:last_date] = cur_h[:cur_date]
+    end
+
+    user_h.each_value do |cur_h|
+      cur_h[:user].paid_until = cur_h[:cur_date]
+      cur_h[:user].save!
     end
   end
 end
