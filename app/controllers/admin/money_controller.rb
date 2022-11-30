@@ -63,9 +63,9 @@ class Admin::MoneyController < Admin::ApplicationController
     fmt = "%Y-%m-%d"
     today = Date.strptime(Time.now.strftime(fmt), fmt)
 
-    @users = User.find(:all, :conditions => ["paid_until >= ?", today])
+    count = User.where(["paid_until >= ?", today]).count
 
-    render :text => "Paying: #{@users.length}"
+    render plain: "Paying: #{count}"
   end
 
   def new_payment
