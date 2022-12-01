@@ -46,6 +46,22 @@ class Admin::MoneyControllerTest < ActionDispatch::IntegrationTest
     assert_content "Paying: 0"
   end
 
+  test "creating payments" do
+    @user = User.create!(password: "pass123", login: "hey", email: "hey@there.com", password_confirmation: "pass123", name: "hey", phone: "12341234", verified: true, paid_until: Time.now - 1.month, door_hash: "heyhey", group: "admin")
+    login(@user)
+    visit admin_money_new_path
+    fill_in "payment_amount", with: "12300"
+    fill_in "payment_received", with: "2020-02-08"
+    select @user.login, from: "payment_user_id"
+    fill_in "payment_source", with: "somesource"
+    click_button "Save"
+    payment = @user.payments.first
+    assert_equal payment.amount, 12300
+    assert_equal payment.user_id, @user.id
+    assert_equal payment.source, "somesource"
+    assert_equal payment.received, Date.new(2020, 2, 8)
+  end
+
   private
 
   def login(user)

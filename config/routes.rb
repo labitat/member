@@ -47,6 +47,8 @@ Rails.application.routes.draw do
     post "/money/confirm_bankdata", to: "money#confirm_bankdata"
     post "/money/save_bankdata", to: "money#save_bankdata"
     get "/money/stats", to: "money#stats"
+    get "/money/new", to: "money#new_payment"
+    post "/money/new", to: "money#create_payment"
   end
 
   # root

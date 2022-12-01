@@ -69,9 +69,19 @@ class Admin::MoneyController < Admin::ApplicationController
   end
 
   def new_payment
-    @users = User.find(:all, :order => "login asc")
+    @users = User.all().order("login asc")
 
     @payment = Payment.new
+  end
+
+  def create_payment
+    p payment_params
+    @payment = Payment.new(payment_params)
+    if @payment.save
+      redirect_to admin_money_path
+    else
+      render :new_payment
+    end
   end
 
   def edit_payment
@@ -149,5 +159,11 @@ class Admin::MoneyController < Admin::ApplicationController
                              :include => :user,
                              :limit => @limit,
                              :order => "payments.received desc")
+  end
+
+  private
+
+  def payment_params
+    params.require(:payment).permit(:user_id, :amount, :received, :source)
   end
 end
