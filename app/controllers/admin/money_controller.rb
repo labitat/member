@@ -69,15 +69,15 @@ class Admin::MoneyController < Admin::ApplicationController
   end
 
   def new_payment
-    @users = User.all().order("login asc")
+    @users = User.all.order("login asc")
 
     @payment = Payment.new
   end
 
   def create_payment
-    p payment_params
     @payment = Payment.new(payment_params)
     if @payment.save
+      flash[:notice] = "Payment created!"
       redirect_to admin_money_path
     else
       render :new_payment
@@ -85,31 +85,19 @@ class Admin::MoneyController < Admin::ApplicationController
   end
 
   def edit_payment
-    @users = User.find(:all, :order => "login asc")
+    @payment = Payment.find(params[:id])
+  end
 
-    if params["id"]
-      @payment = Payment.find(params["id"])
+  def update_payment
+    @payment = Payment.find(params[:id])
+    @payment.update(payment_params)
+
+    if @payment.save
+      User.paid_until_update!
+      flash[:notice] = "Payment updated!"
+      redirect_to admin_money_path
     else
-      @payment = Payment.new
-    end
-
-    return if !request.post?
-
-    @payment.attributes = params["payment"]
-
-    begin
-      @payment.save!
-    rescue ActiveRecord::RecordInvalid => e
-      flash["notice"] = "You missed a spot!"
-      return
-    end
-
-    User.paid_until_update
-
-    if params["id"]
-      flash["notice"] = "Changes saved!"
-    else
-      flash["notice"] = "New payment created!"
+      render :edit_payment
     end
   end
 

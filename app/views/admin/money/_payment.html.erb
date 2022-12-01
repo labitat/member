@@ -1,8 +1,10 @@
 <%= fields_for :payment do |f| %>
   <p>Received date: <%= f.text_field :received %></p>
   <p>Amount: <%= f.text_field :amount %></p>
-  <p>Member: <%= payment_user_list(@users, @payment.user_id) %></p>
+  <p>Member: <%= payment_user_list(all_users, @payment.user_id) %></p>
   <p>Source: <%= f.text_field :source %></p>
-  <p>Comment: <%= @payment.comment %></p>
+  <% if payment.persisted? %>
+    <p>Comment: <%= @payment.comment %></p>
+  <% end %>
   <p>Member is the member who paid. Source can be e.g. "bank" for a bank transfer, or "cash - Juul" to denote that Juul received the payment in cash. Comment is the original comment from the bank transfer (if any).</p>
 <% end %>

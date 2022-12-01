@@ -55,11 +55,33 @@ class Admin::MoneyControllerTest < ActionDispatch::IntegrationTest
     select @user.login, from: "payment_user_id"
     fill_in "payment_source", with: "somesource"
     click_button "Save"
+    assert_content "Payment created!"
     payment = @user.payments.first
-    assert_equal payment.amount, 12300
-    assert_equal payment.user_id, @user.id
-    assert_equal payment.source, "somesource"
-    assert_equal payment.received, Date.new(2020, 2, 8)
+    assert_equal 12300, payment.amount
+    assert_equal @user.id, payment.user_id
+    assert_equal "somesource", payment.source
+    assert_equal Date.new(2020, 2, 8), payment.received
+  end
+
+  test "updating payments" do
+    @user = User.create!(password: "pass123", login: "hey", email: "hey@there.com", password_confirmation: "pass123", name: "hey", phone: "12341234", verified: true, paid_until: Time.now - 1.month, door_hash: "heyhey", group: "admin")
+    @user.payments.create!(received: "2020-03-14", amount: 123, comment: "hey guys", source: "a source")
+    login(@user)
+    visit admin_money_edit_path(id: @user.payments.first.id)
+    # puts page.body
+
+    fill_in "payment_amount", with: "12300"
+    fill_in "payment_received", with: "2020-04-18"
+    fill_in "payment_source", with: "b source"
+    assert_content "hey guys"
+    click_button "Update"
+    assert_content "Payment updated!"
+    payment = @user.payments.first
+    assert_equal 1, @user.payments.count
+    assert_equal 12300, payment.amount
+    assert_equal @user.id, payment.user_id
+    assert_equal "b source", payment.source
+    assert_equal Date.new(2020, 4, 18), payment.received
   end
 
   private

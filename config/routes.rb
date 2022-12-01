@@ -49,6 +49,8 @@ Rails.application.routes.draw do
     get "/money/stats", to: "money#stats"
     get "/money/new", to: "money#new_payment"
     post "/money/new", to: "money#create_payment"
+    get "/money/edit/:id", to: "money#edit_payment", as: "money_edit"
+    post "/money/edit/:id", to: "money#update_payment"
   end
 
   # root

@@ -1,0 +1,14 @@
+<h3>Edit payment</h3>
+
+<% if @payment.errors.full_messages.any? %>
+  <ul>
+  <% @payment.errors.full_messages.each do |error_message| %>
+    <li><%= error_message %></li>
+  <% end %>
+  </ul>
+<% end %>
+
+<%= form_tag admin_money_edit_path(id: @payment.id) do %>
+  <%= render "payment", :payment => @payment %>
+  <%= submit_tag "Update" %>
+<% end %>
