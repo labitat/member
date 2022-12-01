@@ -61,6 +61,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_27_222341) do
     t.string "value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_values_on_name", unique: true
   end
 
 end

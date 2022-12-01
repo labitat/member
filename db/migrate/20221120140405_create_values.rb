@@ -4,7 +4,7 @@ class CreateValues < ActiveRecord::Migration[7.0]
       t.string "name"
       t.string "value"
       t.timestamps
+      t.index :name, unique: true
     end
-    add_index :name, unique: true
   end
 end
