@@ -68,8 +68,6 @@ class Admin::MoneyControllerTest < ActionDispatch::IntegrationTest
     @user.payments.create!(received: "2020-03-14", amount: 123, comment: "hey guys", source: "a source")
     login(@user)
     visit admin_money_edit_path(id: @user.payments.first.id)
-    # puts page.body
-
     fill_in "payment_amount", with: "12300"
     fill_in "payment_received", with: "2020-04-18"
     fill_in "payment_source", with: "b source"
