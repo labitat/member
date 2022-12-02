@@ -108,45 +108,44 @@ class Admin::MoneyController < Admin::ApplicationController
     redirect_to :action => "search_payments"
   end
 
-  def search
-    @params = params
-    @limit = nil
+  def search_payments
+  end
 
+  def payment_search_results
     conds = []
-
-    if params["from_date"] && (!params["from_date"].empty?)
-      if params["to_date"] && (!params["to_date"].empty?)
-        conds << "payments.received >= #{q(params["from_date"])} AND payments.received <= #{q(params["to_date"])}"
+    vars = []
+    if params["from_date"].present?
+      vars << params["from_date"]
+      if params["to_date"].present?
+        conds << "payments.received >= ? AND payments.received <= ?"
+        vars << params["to_date"]
       else
-        conds << "payments.received = #{q(params["from_date"])}"
+        conds << "payments.received = ?"
       end
     end
 
-    if params["from_amount"] && (!params["from_amount"].empty?)
-      if params["to_amount"] && (!params["to_amount"].empty?)
-        conds << "payments.amount >= #{q(params["from_amount"])} AND payments.amount <= #{q(params["to_amount"])}"
+    if params["from_amount"].present?
+      vars << params["from_amount"]
+      if params["to_amount"].present?
+        vars << params["to_amount"]
+        conds << "payments.amount >= ? AND payments.amount <= ?"
       else
-        conds << "payments.amount = #{q(params["from_amount"])}"
+        conds << "payments.amount = ?"
       end
     end
 
-    if params["login"] && (!params["login"].empty?)
-      conds << "users.login like #{q("%" + params["login"].gsub(/\s+/, "%") + "%")}"
+    if params["login"].present?
+      vars << "%#{ActiveRecord::Base.send(:sanitize_sql_like, params["login"])}%"
+      conds << "users.login like ?"
     end
 
     if params["name"] && (!params["name"].empty?)
+      vars << "%#{ActiveRecord::Base.send(:sanitize_sql_like, params["name"])}%"
+      conds << "users.name like ?"
       conds << "users.name like #{q("%" + params["name"].gsub(/\s+/, "%") + "%")}"
     end
 
-    if conds.length == 0
-      @limit = 20
-    end
-
-    @payments = Payment.find(:all,
-                             :conditions => conds.join(" AND "),
-                             :include => :user,
-                             :limit => @limit,
-                             :order => "payments.received desc")
+    @payments = (conds.empty? ? Payment : Payment.where([conds.join(" AND "), *conds])).includes(:user).order("payments.received desc").page params[:page]
   end
 
   private

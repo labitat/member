@@ -44,6 +44,7 @@ gem "bootsnap", require: false
 
 gem "recaptcha"
 gem "nokogiri"
+gem "kaminari"
 
 # Use Sass to process CSS
 # gem "sassc-rails"

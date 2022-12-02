@@ -1,0 +1,13 @@
+<%= link_to "Create new payment...", :action => "new_payment" %>
+
+<p>Dates are in the format YYYY-MM-DD.</p>
+
+<%= form_tag admin_search_results_path, method: "get" do %>
+   <p>From/exact date: <%= text_field_tag "from_date", params["from_date"] %></p>
+   <p>To date: <%= text_field_tag "to_date", params["to_date"] %></p>
+   <p>From/exact amount (in kr): <%= text_field_tag "from_amount", params["from_amount"] %></p>
+   <p>To amount (in kr): <%= text_field_tag "to_amount", params["to_amount"] %></p>
+   <p>User/login-name: <%= text_field_tag "login", params["login"] %></p>
+   <p>Full name: <%= text_field_tag "name", params["name"] %></p>
+   <%= submit_tag "Search" %>
+<% end %>

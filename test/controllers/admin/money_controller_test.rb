@@ -82,6 +82,16 @@ class Admin::MoneyControllerTest < ActionDispatch::IntegrationTest
     assert_equal Date.new(2020, 4, 18), payment.received
   end
 
+  test "search payments" do
+    @user = User.create!(password: "pass123", login: "hey", email: "hey@there.com", password_confirmation: "pass123", name: "hey", phone: "12341234", verified: true, paid_until: Time.now - 1.month, door_hash: "heyhey", group: "admin")
+    @user.payments.create!(received: "2020-03-14", amount: 123, comment: "hey guys", source: "a source")
+    login(@user)
+    visit admin_search_payments_path
+    click_button "Search"
+    assert_link "edit"
+    assert_content "hey guys"
+  end
+
   private
 
   def login(user)

@@ -1,0 +1,40 @@
+
+<h3>Search for payments</h3>
+
+<%= render "search" %>
+
+<% if @payments.length == 0 %>
+
+  <p>No payments found.</p>
+
+<% else %>
+    <table cellspacing='5' cellpadding='3' border='0'>
+      <tr>
+        <td>Date</td>
+        <td>User</td>
+        <td>Amount</td>
+        <td>Comment</td>
+        <td>Actions</td>
+      </tr>
+
+      <% @payments.each do |payment| %>
+        <tr>
+          <% if !payment.received %>
+            <td><%= payment.user.login %></td>
+            <td><%= payment.id %></td>
+          <% else %>
+            <td><%= payment.received.strftime("%Y-%m-%d") %></td>
+            <td><%= payment.user.login %></td>
+          <% end %>
+          <td><%= payment.amount %></td>
+          <td><%= payment.comment %></td>
+          <td><%= link_to "edit", admin_money_edit_path(id: payment.id) %></td>
+        </tr>
+    
+
+      <% end %>
+    </table>
+    <%= paginate @payments %>
+<% end %>
+
+<%= link_to "Create new payment...", :action => "new_payment" %>

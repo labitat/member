@@ -42,7 +42,6 @@ Rails.application.routes.draw do
     get "/users", to: "user#list"
     # money
     get "/money", to: "money#index"
-    get "/money/search", to: "money#search"
     get "/money/upload", to: "money#upload"
     post "/money/confirm_bankdata", to: "money#confirm_bankdata"
     post "/money/save_bankdata", to: "money#save_bankdata"
@@ -51,6 +50,8 @@ Rails.application.routes.draw do
     post "/money/new", to: "money#create_payment"
     get "/money/edit/:id", to: "money#edit_payment", as: "money_edit"
     post "/money/edit/:id", to: "money#update_payment"
+    get "/money/search", to: "money#search_payments", as: "search_payments"
+    get "/money/results", to: "money#payment_search_results", as: "search_results"
   end
 
   # root
