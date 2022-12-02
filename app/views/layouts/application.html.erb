@@ -11,24 +11,25 @@
   </head>
 
   <body>
+    <main class="container">
+      <% if current_user %>
+        <div id='header'>
+          <ul id='menu'>
+          <li><%= link_to "log out", session_destory_path %>
+            <li><%= link_to "main page", root_path %>
+            <li><%= link_to "user info", user_info_path %>
+          </ul>
+          <% if current_user.is_admin? %>
+          <ul id='admin_menu'>
+            <li><%= link_to "user admin", admin_users_path %></li>
+            <li><%= link_to "money admin", admin_money_path %></li>
+          </ul>
+          <% end %>
 
-    <% if current_user %>
-      <div id='header'>
-        <ul id='menu'>
-        <li><%= link_to "log out", session_destory_path %>
-          <li><%= link_to "main page", root_path %>
-          <li><%= link_to "user info", user_info_path %>
-        </ul>
-        <% if current_user.is_admin? %>
-        <ul id='admin_menu'>
-          <li><%= link_to "user admin", admin_users_path %></li>
-          <li><%= link_to "money admin", admin_money_path %></li>
-        </ul>
-        <% end %>
+        </div>
+      <% end %>
 
-      </div>
-    <% end %>
-
-    <%= yield %>
+      <%= yield %>
+    </main>
   </body>
 </html>

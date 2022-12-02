@@ -7,18 +7,18 @@ class SessionController < ApplicationController
     user = User.authenticate(params[:login], params[:password], true)
     if user.nil?
       flash.now[:error] = "Login error"
-      render :action => "new"
+      render :new, status: 400
     elsif user.verified?
       self.current_user = user
       if params[:remember_me] == "1"
         current_user.remember_me unless current_user.remember_token?
         cookies[:auth_token] = { :value => self.current_user.remember_token, :expires => self.current_user.remember_token_expires_at }
       end
-      redirect_back_or_default root_path
       flash[:notice] = "Login successful"
+      redirect_to root_path
     else
       flash.now[:error] = "You must verify your email address before logging in"
-      render :action => "new"
+      render :new, status: 400
     end
   end
 
